@@ -10,7 +10,6 @@ function instance(system, id, config) {
 
 	// Request id counter
 	self.request_id = 0;
-	self.login = false;
 	// super-constructor
 	instance_skel.apply(this, arguments);
 	self.status(1,'Initializing');
@@ -30,28 +29,12 @@ instance.prototype.incomingData = function(data) {
 	debug(data);
 
 	// Match part of the copyright response from unit when a connection is made.
-	if (self.login === false && data.match("==Welcome to OMM-1000==")) {
-		self.status(self.STATUS_WARNING,'Logging in');
-		self.socket.write("I"+ "\n");
-	}
-
-	if (self.login === false && data.match("Password:")) {
-		self.status(self.STATUS_WARNING,'Logging in');
-		self.socket.write(""+ "\n");
-	}
-
-	// Match first letter of expected response from unit.
-	else if (self.login === false && data.match("==T")) {
-		self.login = true;
+	if (data.match("==Welcome to OMM-1000==")) {
 		self.status(self.STATUS_OK);
-		debug("logged in");
 	}
-	else if (self.login === false && data.match('login incorrect')) {
-		self.log('error', "incorrect username/password (expected no password)");
-		self.status(self.STATUS_ERROR, 'Incorrect user/pass');
-	}
+
 	else {
-		debug("data nologin", data);
+		debug("incorrect status", data);
 	}
 };
 
